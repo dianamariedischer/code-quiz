@@ -11,6 +11,7 @@ function writeTime() {
 var startButton = document.querySelector("#start");
 var restartButton = document.querySelector("#try-again");
 var viewScoreLink = document.querySelector("#scoreLink");
+var submitButton = document.querySelector("#submit");
 
 // initialize page sections
 var header = document.querySelector("header");
@@ -149,6 +150,14 @@ function showDonePage() {
     score.textContent = "Your final score is " + time + ".";
 }
 
+function saveScore() {
+    localStorage.setItem();
+}
+
+function renderScore() {
+
+}
+
 function clearAnswers() {
     //clear answers
     for (y = 1; y < 5; y++) {
@@ -199,7 +208,7 @@ function restart() {
     // show only start page, set time to zero
 
     // if user has answered any questions, reset questions and clear answers
-    if (x > 0) {
+    if (x >= 0) {
         clearAnswers();
         x = 0;
     }
@@ -280,6 +289,7 @@ function startQuiz() {
 startButton.addEventListener("click", startQuiz);
 viewScoreLink.addEventListener("click", showScorePage);
 restartButton.addEventListener("click", restart);
+//submitButton.addEventListener("click", addScore);
 // add button for clear highscores
-// that button should call to a function that empties the high score array and prints it
+// that button should call to a function that empties the high score array
 
