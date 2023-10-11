@@ -197,10 +197,15 @@ var scorePageShown = false;
 function restart() {
     // if user has completed quiz
     // show only start page, set time to zero
+
+    // if user has answered any questions, reset questions and clear answers
+    if (x > 0) {
+        clearAnswers();
+        x = 0;
+    }
+
     time = 0;
-    x = 0;
     scorePageShown = false;
-    clearAnswers();
     writeTime();
     header.setAttribute("style", "display: flex;");
     startPage.setAttribute("style", "display: block;");
