@@ -9,7 +9,7 @@ function writeTime() {
 
 // initialize variables for buttons and links
 var startButton = document.querySelector("#start");
-var goBackButton = document.querySelector("#go-back");
+var restartButton = document.querySelector("#try-again");
 var viewScoreLink = document.querySelector("#scoreLink");
 
 // initialize page sections
@@ -22,31 +22,192 @@ var donePage = document.querySelector("#all-done");
 // TODO: put in array containing objects containing questions and answers
 // at least 6 questions
 // answers have boolean values
+var questions = [
+    [{"question": "Commonly used data types DO NOT include:"},
+    {
+        "answer": "strings",
+        "bool": false
+    },
+    {
+        "answer": "booleans",
+        "bool": false
+    },
+    {
+        "answer": "alerts",
+        "bool": true
+    },
+    {
+        "answer": "numbers",
+        "bool": false
+    }],
+    [{"question": "The condition in an if / else statement is enclosed within"},
+    {
+        "answer": "quotes",
+        "bool": false
+    },
+    {
+        "answer": "curly brackets",
+        "bool": false
+    },
+    {
+        "answer": "parentheses",
+        "bool": true
+    },
+    {
+        "answer": "square brackets",
+        "bool": false
+    }],
+    [{"question": "Arrays in JavaScript can be used to store ______."},
+    {
+        "answer": "numbers and strings",
+        "bool": false
+    },
+    {
+        "answer": "other arrays",
+        "bool": false
+    },
+    {
+        "answer": "booleans",
+        "bool": false
+    },
+    {
+        "answer": "all of the above",
+        "bool": true
+    }],
+    [{"question": "String values must be enclosed within ______ when being assigned to variables."},
+    {
+        "answer": "commas",
+        "bool": false
+    },
+    {
+        "answer": "curly brackets",
+        "bool": false
+    },
+    {
+        "answer": "quotes",
+        "bool": true
+    },
+    {
+        "answer": "parentheses",
+        "bool": false
+    }],
+    [{"question": "A very useful tool used during development and debugging for printing content to the debugger is:"},
+    {
+        "answer": "JavaScript",
+        "bool": false
+    },
+    {
+        "answer": "terminal / bash",
+        "bool": false
+    },
+    {
+        "answer": "for loops",
+        "bool": false
+    },
+    {
+        "answer": "console.log",
+        "bool": true
+    }],
+    [{"question": "When assigned to variables, objects are enclosed within:"},
+    {
+        "answer": "quotes",
+        "bool": false
+    },
+    {
+        "answer": "curly brackets",
+        "bool": true
+    },
+    {
+        "answer": "parentheses",
+        "bool": false
+    },
+    {
+        "answer": "square brackets",
+        "bool": false
+    }]
+    ]
+
+var x = 0;
+
+function answerCorrect() {
+    score++;
+    moveOn();
+}
+
+function answerIncorrect() {
+    time -= 10;
+    moveOn();
+}
+
+function showDonePage() {
+    quizPage.setAttribute("style", "display: none;");
+    donePage.setAttribute("style", "display: block;");
+    scorePage.setAttribute("style", "display: none;");
+
+    scorePageShown = true;
+    var score = document.getElementById("score");
+    score.textContent = "Your final score is " + time + ".";
+}
+
+function clearAnswers() {
+    //clear answers
+    for (y = 1; y < 5; y++) {
+        var answer = document.querySelector(".answer");
+        answer.remove();
+    }
+}
+
+function moveOn() {
+
+    if (x < questions.length) {
+        clearAnswers();
+        askQuestions();
+    } else {
+        showDonePage();
+    }
+}
 
 // function that will write the questions and its answers onto the page
-// if correct answer, add a point to the score: score++;
-// else it's incorrect and subtract 10 seconds: time -= 10;
-// after answer selected write next question to window
+function askQuestions() {
+    var writtenQuestion = document.getElementById("question");
+    writtenQuestion.textContent = questions[x][0].question;
+
+    for (y = 1; y < questions[x].length; y++) {
+        var answer = document.createElement("button");
+        answer.classList.add("btn");
+        answer.classList.add("answer");
+        answer.append(y + ". " + questions[x][y].answer);
+        quizPage.append(answer);
+
+        if (questions[x][y].bool) {
+            answer.addEventListener("click", answerCorrect);
+        } else {
+            answer.addEventListener("click", answerIncorrect);
+        }
+    }
+
+    x++;
+}
 
 // boolean on whether or not the score page has been shown
 var scorePageShown = false;
 
 // button that sends user to start page if quiz has been completed
 // or sends user back to the quiz
-function goBack() {
+function restart() {
     // if user has completed quiz
     // show only start page, set time to zero
     time = 0;
+    x = 0;
     scorePageShown = false;
+    clearAnswers();
     writeTime();
     header.setAttribute("style", "display: flex;");
     startPage.setAttribute("style", "display: block;");
     quizPage.setAttribute("style", "display: none;");
-    scorePage.setAttribute("style", "display: none;");
     donePage.setAttribute("style", "display: none;");
+    scorePage.setAttribute("style", "display: none;");
 
-    // if user has not completed quiz
-    // return to quiz and start timer back up
 }
 
 // shows high score page
@@ -68,8 +229,10 @@ function countdown() {
 
     // quiz timer with interval countdown
     var quizTimer = setInterval(function () {
-        // pause the timer if the user checks the score page
+        // end the timer if the user checks the score page
         if (scorePageShown) {
+            x = 0;
+            writeTime();
             clearInterval(quizTimer);
             return;
         }
@@ -79,11 +242,11 @@ function countdown() {
 
         // if time is up
         if (time === 0) {
+            scorePageShown = true;
             // stop timer
             clearInterval(quizTimer);
             // go to all done page for user to enter initials
-            quizPage.setAttribute("style", "display: none;");
-            donePage.setAttribute("style", "display: block;");
+            showDonePage();
         } 
 
         writeTime();
@@ -100,6 +263,7 @@ function startQuiz() {
     // starts counting down
     countdown();
 
+    askQuestions();
     
     // if user gets through all questions before timer ends, stop time
 
@@ -110,7 +274,7 @@ function startQuiz() {
 // event listeners that call to functions
 startButton.addEventListener("click", startQuiz);
 viewScoreLink.addEventListener("click", showScorePage);
-goBackButton.addEventListener("click", goBack);
+restartButton.addEventListener("click", restart);
 // add button for clear highscores
 // that button should call to a function that empties the high score array and prints it
 
