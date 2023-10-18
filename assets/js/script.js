@@ -1,26 +1,37 @@
-// initialize variables for timer
-var writtenTime = document.getElementById("timer");
-var time = 0;
-
-// function that writes the time to the page
-function writeTime() {
-    writtenTime.textContent = "Time: " + time;
-}
-
 // initialize variables for buttons and links
 var startButton = document.querySelector("#start");
-var restartButton = document.querySelector("#try-again");
+var tryAgainButton = document.querySelector("#try-again");
+var clearButton = document.querySelector("#clear");
 var viewScoreLink = document.querySelector("#scoreLink");
 var submitButton = document.querySelector("#submit");
+var main = document.querySelector("#main");
 
 // initialize page sections
 var header = document.querySelector("header");
 var startPage = document.querySelector("#start-page");
 var quizPage = document.querySelector("#quiz");
+var quizPageAnswers = document.querySelector("#answers");
 var scorePage = document.querySelector("#highscores");
+var scoreListSection = document.querySelector("#scores");
 var donePage = document.querySelector("#all-done");
 
-// TODO: put in array containing objects containing questions and answers
+// initialize empty array for scores and initials
+var scoreList = [];
+
+// variable for user's initials and score
+var user = document.querySelector("#user");
+var userScore = 0;
+
+// whether the score page has been shown, indicator for timer
+var scorePageShown = false;
+
+var correctOrIncorrect = document.createElement("p");
+
+// initialize variables for timer
+var writtenTime = document.getElementById("timer");
+var time = 0;
+
+// array containing objects containing questions and answers
 // at least 6 questions
 // answers have boolean values
 var questions = [
@@ -126,113 +137,11 @@ var questions = [
         "answer": "square brackets",
         "bool": false
     }]
-    ]
+]
 
-var x = 0;
-
-function answerCorrect() {
-    score++;
-    moveOn();
-}
-
-function answerIncorrect() {
-    time -= 10;
-    moveOn();
-}
-
-function showDonePage() {
-    quizPage.setAttribute("style", "display: none;");
-    donePage.setAttribute("style", "display: block;");
-    scorePage.setAttribute("style", "display: none;");
-
-    scorePageShown = true;
-    var score = document.getElementById("score");
-    score.textContent = "Your final score is " + time + ".";
-}
-
-function saveScore() {
-    localStorage.setItem();
-}
-
-function renderScore() {
-
-}
-
-function clearAnswers() {
-    //clear answers
-    for (y = 1; y < 5; y++) {
-        var answer = document.querySelector(".answer");
-        answer.remove();
-    }
-}
-
-function moveOn() {
-
-    if (x < questions.length) {
-        clearAnswers();
-        askQuestions();
-    } else {
-        showDonePage();
-    }
-}
-
-// function that will write the questions and its answers onto the page
-function askQuestions() {
-    var writtenQuestion = document.getElementById("question");
-    writtenQuestion.textContent = questions[x][0].question;
-
-    for (y = 1; y < questions[x].length; y++) {
-        var answer = document.createElement("button");
-        answer.classList.add("btn");
-        answer.classList.add("answer");
-        answer.append(y + ". " + questions[x][y].answer);
-        quizPage.append(answer);
-
-        if (questions[x][y].bool) {
-            answer.addEventListener("click", answerCorrect);
-        } else {
-            answer.addEventListener("click", answerIncorrect);
-        }
-    }
-
-    x++;
-}
-
-// boolean on whether or not the score page has been shown
-var scorePageShown = false;
-
-// button that sends user to start page if quiz has been completed
-// or sends user back to the quiz
-function restart() {
-    // if user has completed quiz
-    // show only start page, set time to zero
-
-    // if user has answered any questions, reset questions and clear answers
-    if (x >= 0) {
-        clearAnswers();
-        x = 0;
-    }
-
-    time = 0;
-    scorePageShown = false;
-    writeTime();
-    header.setAttribute("style", "display: flex;");
-    startPage.setAttribute("style", "display: block;");
-    quizPage.setAttribute("style", "display: none;");
-    donePage.setAttribute("style", "display: none;");
-    scorePage.setAttribute("style", "display: none;");
-
-}
-
-// shows high score page
-function showScorePage() {
-    scorePageShown = true;
-    //hide the rest of the sections
-    header.setAttribute("style", "display: none;");
-    startPage.setAttribute("style", "display: none;");
-    quizPage.setAttribute("style", "display: none;");
-    donePage.setAttribute("style", "display: none;");
-    scorePage.setAttribute("style", "display: block; margin-top: 60px;");
+// function that writes the time to the page
+function writeTime() {
+    writtenTime.textContent = "Time: " + time;
 }
 
 // countdown function
@@ -268,6 +177,117 @@ function countdown() {
     , 1000);
 }
 
+// clear scorelist, create append and render scores with initials
+function renderScores() {
+    // clear scores
+    scoreListSection.innerHTML = "";
+
+    // creating the list of scores
+    for (var i = 0; i < scoreList.length; i++) {
+        var score = scoreList[i];
+    
+        var li = document.createElement("li");
+        li.textContent = score;
+    
+        scoreListSection.appendChild(li);
+      }
+}
+
+// retrieve and update the global score list array then call the render function //MOVE THIS 
+function initScorePage() {
+
+    if (document.querySelector(".comment") !== null) {
+        document.querySelector(".comment").remove();
+    }
+
+    // show score page, hide the rest
+    header.setAttribute("style", "display: none;");
+    startPage.setAttribute("style", "display: none;");
+    quizPage.setAttribute("style", "display: none;");
+    donePage.setAttribute("style", "display: none;");
+    scorePage.setAttribute("style", "display: block; margin-top: 60px;");
+
+    scorePageShown = true;
+    
+    // retrieve score list from local storage and parse as an array
+    var storedScoreList = JSON.parse(localStorage.getItem("namesAndScores"));
+
+    // if there is anything in storage, update the global score list
+    if (storedScoreList !== null) {
+        scoreList = storedScoreList;
+    }
+
+    renderScores();
+}
+
+function storeScores() {
+    // store the current score array in local storage as a JSON string
+    localStorage.setItem("namesAndScores", JSON.stringify(scoreList));
+}
+
+function showDonePage() {
+    quizPage.setAttribute("style", "display: none;");
+    donePage.setAttribute("style", "display: block;");
+
+    scorePageShown = true;
+    var score = document.getElementById("score");
+    score.textContent = "Your final score is " + time + ".";
+    userScore = time;
+}
+
+// variable defined globally so that moveOn can check if there are more questions
+var x = 0;
+
+function moveOn() {
+    if (x < questions.length - 1) {
+        x++;
+        quizPageAnswers.innerHTML = ""
+        askQuestions();
+    } else {
+        x = 0;
+        quizPageAnswers.innerHTML = ""
+        console.log(correctOrIncorrect);
+        showDonePage();
+    }
+}
+
+function answerCorrect() {
+    // append text that says Correct!
+    correctOrIncorrect.textContent = "Correct!";
+    correctOrIncorrect.classList.add("comment");
+    main.append(correctOrIncorrect);
+    moveOn();
+}
+
+function answerIncorrect() {
+    time -= 10;
+    correctOrIncorrect.textContent = "Wrong!";
+    correctOrIncorrect.classList.add("comment");
+    main.append(correctOrIncorrect);
+    moveOn();
+}
+
+function askQuestions() {
+    
+    var writtenQuestion = document.getElementById("question");
+    // x is defined right above move on function
+    writtenQuestion.textContent = questions[x][0].question;
+
+    for (y = 1; y < questions[x].length; y++) {
+        var answer = document.createElement("button");
+        answer.classList.add("btn");
+        answer.classList.add("answer");
+        answer.append(y + ". " + questions[x][y].answer);
+        quizPageAnswers.appendChild(answer);
+
+        if (questions[x][y].bool) {
+            answer.addEventListener("click", answerCorrect);
+        } else {
+            answer.addEventListener("click", answerIncorrect);
+        }
+    }
+}
+
 // starts quiz!
 function startQuiz() {
     // hides all blocks but quiz
@@ -283,13 +303,62 @@ function startQuiz() {
 
 }
 
-// once user submits their initials it should save it to a locally stored array of initials with scores
+function reset() {
+
+    scorePageShown = false;
+    userScore = 0;
+    time = 0;
+    writeTime();
+    quizPageAnswers.innerHTML = "";
+}
+
+function tryAgain() {
+    reset();
+
+    header.setAttribute("style", "display: flex;");
+    startPage.setAttribute("style", "display: block;");
+    quizPage.setAttribute("style", "display: none;");
+    donePage.setAttribute("style", "display: none;");
+    scorePage.setAttribute("style", "display: none");
+}
+
+function saveScore(event) {
+    event.preventDefault();
+    var initials = user.value;
+  
+    // make sure input isn't blank
+    if (initials === "") {
+        return;
+    }
+
+    // retrieve score list from local storage and parse as an array
+    var storedScoreList = JSON.parse(localStorage.getItem("namesAndScores"));
+
+    // if there is anything in storage, update the global score list
+    if (storedScoreList !== null) {
+        scoreList = storedScoreList;
+    }
+
+    // adds new initals with score to the array
+    scoreList.push(scoreList.length + 1 + ". " + initials + " - " + userScore);
+
+    storeScores();
+    initScorePage();
+}
+
+// function that empties the high score array
+function clearScores() {
+    scoreList = [];
+
+    storeScores();
+    initScorePage();
+}
+
+console.log();
 
 // event listeners that call to functions
 startButton.addEventListener("click", startQuiz);
-viewScoreLink.addEventListener("click", showScorePage);
-restartButton.addEventListener("click", restart);
-//submitButton.addEventListener("click", addScore);
-// add button for clear highscores
-// that button should call to a function that empties the high score array
-
+viewScoreLink.addEventListener("click", initScorePage);
+tryAgainButton.addEventListener("click", tryAgain);
+submitButton.addEventListener("click", saveScore);
+clearButton.addEventListener("click", clearScores);

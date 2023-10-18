@@ -21,6 +21,28 @@ a {
     color: indigo;
 }
 
+ul {
+    padding: 0;
+}
+
+li {
+    background-color: rgb(215, 200, 225);
+    padding: 5px;
+    margin-bottom: 3px;
+    list-style-type: none;
+}
+
+.answer {
+    display: block;
+}
+
+.comment {
+    border-top: gray 1px solid;
+    padding-top: 15px;
+    font-style: italic;
+    color: gray;
+}
+
 .btn {
     background-color:indigo;
     border: none;
@@ -57,4 +79,8 @@ a {
 
 #highscores {
     display: none;
+}
+
+#save {
+    margin-top: 15px;
 }
