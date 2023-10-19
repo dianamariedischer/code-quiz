@@ -7,11 +7,14 @@
     <title>Code Quiz</title>
 </head>
 <body>
+    <!-- header with timer and view highscore link -->
     <header>
         <p id="scoreLink">View Highscores</p>
         <p id="timer">Time: 0</p>
     </header>
+    <!-- main section with pages that are displayed and hidden depending on use -->
     <main id ="main">
+        <!-- initial page that starts quiz -->
         <div id="start-page">
             <h1>Coding Quiz Challenge</h2>
             <p>Try to answer the following code-related questions within the time limit.
@@ -19,21 +22,27 @@
             </p>
             <button class="btn" id="start">Start Quiz</button>
         </div>
+        <!-- quiz page with questions and answers that change on the page -->
         <div id="quiz">
             <h3 id="question"></h3>
             <div id="answers"></div>
         </div>
+        <!-- done page that appears when quiz is complete or timer counts all the way down -->
         <div id="all-done">
             <h3>All done!</h3>
+            <!-- displays the amount of time left as user score -->
             <p id="score"></p>
+            <!-- form for user's initials -->
             <form>
                 <label for="user">Enter initials:</label>
                 <input type="text" id="user">
                 <button class="btn" id="submit">Submit</button>
             </form>
         </div>
+        <!-- displays high scores in local storage as a list -->
         <div id="highscores">
             <h2>Highscores</h2>
+            <!-- list for scores to be added from local storage -->
             <ul id="scores"></ul>
             <button class="btn" id="try-again">Try Again</button>
             <button class="btn" id="clear">Clear Highscores</button>

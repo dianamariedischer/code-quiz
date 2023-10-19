@@ -225,11 +225,13 @@ function storeScores() {
     localStorage.setItem("namesAndScores", JSON.stringify(scoreList));
 }
 
+// function that shows the done page, and sets and displays the user score
 function showDonePage() {
     quizPage.setAttribute("style", "display: none;");
     donePage.setAttribute("style", "display: block;");
 
     scorePageShown = true;
+
     var score = document.getElementById("score");
     score.textContent = "Your final score is " + time + ".";
     userScore = time;
@@ -238,6 +240,7 @@ function showDonePage() {
 // variable defined globally so that moveOn can check if there are more questions
 var x = 0;
 
+// go to next question or show the done page
 function moveOn() {
     if (x < questions.length - 1) {
         x++;
@@ -256,23 +259,29 @@ function answerCorrect() {
     correctOrIncorrect.textContent = "Correct!";
     correctOrIncorrect.classList.add("comment");
     main.append(correctOrIncorrect);
+    
     moveOn();
 }
 
 function answerIncorrect() {
     time -= 10;
+    
+    // append text that says Wrong!
     correctOrIncorrect.textContent = "Wrong!";
     correctOrIncorrect.classList.add("comment");
     main.append(correctOrIncorrect);
+    
     moveOn();
 }
 
+// function that writes the questions and answers to the page
 function askQuestions() {
     
     var writtenQuestion = document.getElementById("question");
     // x is defined right above move on function
     writtenQuestion.textContent = questions[x][0].question;
 
+    // loop that writes the answers as buttons
     for (y = 1; y < questions[x].length; y++) {
         var answer = document.createElement("button");
         answer.classList.add("btn");
@@ -280,6 +289,7 @@ function askQuestions() {
         answer.append(y + ". " + questions[x][y].answer);
         quizPageAnswers.appendChild(answer);
 
+        // checks the boolean key in the answer to see if it's correct
         if (questions[x][y].bool) {
             answer.addEventListener("click", answerCorrect);
         } else {
@@ -303,6 +313,7 @@ function startQuiz() {
 
 }
 
+// reset all of the global variables
 function reset() {
 
     scorePageShown = false;
@@ -312,6 +323,7 @@ function reset() {
     quizPageAnswers.innerHTML = "";
 }
 
+// restart the quiz by going to the start page and resetting variables
 function tryAgain() {
     reset();
 
@@ -353,8 +365,6 @@ function clearScores() {
     storeScores();
     initScorePage();
 }
-
-console.log();
 
 // event listeners that call to functions
 startButton.addEventListener("click", startQuiz);
